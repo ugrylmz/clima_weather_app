@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
+Position position;
 class WeatherModel {
   String getWeatherIcon(int condition) {
     if (condition < 300) {
@@ -31,3 +34,45 @@ class WeatherModel {
     }
   }
 }
+
+class Location {
+  double latitude;
+  double longtitude;
+
+  Future<void> getCurrentLocation ()async {
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 10));
+      this.latitude = position.latitude;
+      this.longtitude = position.longitude;
+      print(this.latitude);
+      print(this.longtitude);
+    } else {
+      requestPermission();
+
+    }
+  }
+
+
+  requestPermission() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      await getCurrentLocation ();
+    } else {
+      requestPermission();
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
